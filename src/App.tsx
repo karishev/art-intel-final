@@ -1,25 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import styles from "./components/style.module.css";
+import { Category } from "./components/category";
 
 function App() {
+  const categoryList = [
+    {
+      title: "US Politicians",
+      backgroundColor: "rgb(114,200,122)",
+      titles: ["100", "200", "300", "400", "500"],
+    },
+    {
+      title: "singers",
+      backgroundColor: "rgb(208,158,249)",
+      titles: ["100", "200", "300", "400", "500"],
+    },
+    {
+      title: "actors",
+      backgroundColor: "rgb(241,159,109)",
+      titles: ["100", "200", "300", "400", "500"],
+    },
+    {
+      title: "Category 4",
+      backgroundColor: "rgb(143,181,249)",
+      titles: ["100", "200", "300", "400", "500"],
+    },
+    {
+      title: "Category 5",
+      backgroundColor: "rgb(219,171,96)",
+      titles: ["100", "200", "300", "400", "500"],
+    },
+  ];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <section className={styles.section}>
+      <div className={styles.game__container}>
+        {categoryList.map((category) => (
+          <Category
+            title={category.title}
+            categoryList={category.titles}
+            backgroundColor={category.backgroundColor}
+          />
+        ))}
+      </div>
+      <div className={styles.section__right}></div>
+    </section>
   );
 }
 
