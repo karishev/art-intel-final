@@ -18,7 +18,12 @@ export const Category = ({ categoryList, backgroundColor, title }: Props) => {
       </div>
       <ul className={styles.category__list}>
         {categoryList.map((value) => (
-          <Card key={value} title={value} backgroundColor={backgroundColor} />
+          <Card
+            key={value}
+            category={title}
+            title={value}
+            backgroundColor={backgroundColor}
+          />
         ))}
       </ul>
     </div>

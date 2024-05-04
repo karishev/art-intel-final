@@ -4,7 +4,7 @@ import { Category } from "./components/category";
 function App() {
   const categoryList = [
     {
-      title: "US Politicians",
+      title: "us politicians",
       backgroundColor: "rgb(114,200,122)",
       titles: ["100", "200", "300", "400", "500"],
     },
@@ -35,6 +35,7 @@ function App() {
       <div className={styles.game__container}>
         {categoryList.map((category) => (
           <Category
+            key={category.title}
             title={category.title}
             categoryList={category.titles}
             backgroundColor={category.backgroundColor}

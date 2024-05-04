@@ -7,9 +7,10 @@ import { Question } from "./question";
 interface Props {
   title: string;
   backgroundColor: string;
+  category: string;
 }
 
-export const Card = ({ title, backgroundColor }: Props) => {
+export const Card = ({ title, backgroundColor, category }: Props) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -25,7 +26,7 @@ export const Card = ({ title, backgroundColor }: Props) => {
     border: "2px solid black",
     borderRadius: "0.25rem",
     // boxShadow: 24,
-    p: 4,
+
     overflow: "auto",
   };
 
@@ -44,7 +45,13 @@ export const Card = ({ title, backgroundColor }: Props) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Question onClick={handleClose} />
+          <Question
+            background={backgroundColor}
+            onClick={handleClose}
+            category={category}
+            question={""}
+            difficulty={title}
+          />
         </Box>
       </Modal>
     </>
