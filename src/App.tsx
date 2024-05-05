@@ -1,5 +1,6 @@
 import styles from "./components/style.module.css";
 import { Category } from "./components/category";
+import { Players } from "./components/players";
 
 function App() {
   const categoryList = [
@@ -31,19 +32,22 @@ function App() {
   ];
 
   return (
-    <section className={styles.section}>
-      <div className={styles.game__container}>
-        {categoryList.map((category) => (
-          <Category
-            key={category.title}
-            title={category.title}
-            categoryList={category.titles}
-            backgroundColor={category.backgroundColor}
-          />
-        ))}
-      </div>
-      <div className={styles.section__right}></div>
-    </section>
+    <>
+      <section className={styles.section}>
+        <h1 className={styles.title}>Jeopardy</h1>
+        <div className={styles.game__container}>
+          {categoryList.map((category) => (
+            <Category
+              key={category.title}
+              title={category.title}
+              categoryList={category.titles}
+              backgroundColor={category.backgroundColor}
+            />
+          ))}
+        </div>
+      </section>
+      <Players />
+    </>
   );
 }
 
