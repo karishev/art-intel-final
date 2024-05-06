@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./style.module.css";
 import { Players } from "./players";
+import { useScores } from "../context/score-context";
 
 interface Props {
   onClick: () => void;
@@ -10,6 +11,14 @@ interface Props {
   background: string;
 }
 
+const shuffleArray = (array: string[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+  }
+  return array;
+};
+
 export const Question = ({
   onClick,
   category,
@@ -18,9 +27,10 @@ export const Question = ({
   background,
 }: Props) => {
   const [currentRecording, setCurrentRecording] = useState(1);
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(10);
   const [timerWidth, setTimerWidth] = useState(100); // Width in percentage
   const [sequenceFinished, setSequenceFinished] = useState(false);
+  const [calculate, setCalculate] = useState(false);
   const [finished, setFinished] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState(-1);
   const [isBlinking, setIsBlinking] = useState(false);
@@ -32,15 +42,39 @@ export const Question = ({
     `/audios/${category}/${difficulty}/${question}_fake.mp3`,
   ];
 
+  const [shuffledRecordings, setShuffledRecordings] = useState<string[]>(
+    shuffleArray([...recordings])
+  );
+
+  const { scores, setScores } = useScores();
+  const [playerAnswers, setPlayerAnswers] = useState([-1, -1]); // Last key pressed by each player
+
+  const handleKeyPress = (event: KeyboardEvent) => {
+    const keyMap = { a: 0, s: 1, d: 2, f: 3, h: 0, j: 1, k: 2, l: 3 };
+    if (event.key in keyMap) {
+      const playerIndex = ["a", "s", "d", "f"].includes(event.key) ? 0 : 1;
+      setPlayerAnswers((prev) => {
+        const newAnswers = [...prev];
+        newAnswers[playerIndex] = keyMap[event.key as keyof typeof keyMap];
+        return newAnswers;
+      });
+    }
+  };
+
+  useEffect(() => {
+    console.log("HERE5:", playerAnswers, correctAnswer);
+  }, [playerAnswers, correctAnswer]);
+
   useEffect(() => {
     const playSequence = async () => {
       // Shuffle the recordings array
-      const shuffledRecordings = recordings.sort(() => Math.random() - 0.5);
+
       setCorrectAnswer(
         shuffledRecordings.findIndex((recording) =>
           recording.endsWith("_fake.mp3")
         )
       );
+
       for (let i = 0; i < shuffledRecordings.length; i++) {
         const audio = new Audio(shuffledRecordings[i]);
         setCurrentRecording(i + 1);
@@ -52,11 +86,13 @@ export const Question = ({
       }
       setCurrentRecording(0);
       setSequenceFinished(true);
+      window.addEventListener("keydown", handleKeyPress);
     };
 
     playSequence();
     return () => {
       setCurrentRecording(0);
+      window.removeEventListener("keydown", handleKeyPress);
     };
   }, []);
 
@@ -72,6 +108,8 @@ export const Question = ({
           }
           clearInterval(interval);
           handleCorrect();
+          setCalculate(true);
+
           return 0;
         });
       }, 1000);
@@ -80,8 +118,40 @@ export const Question = ({
     return () => clearInterval(interval);
   }, [sequenceFinished]);
 
+  useEffect(() => {
+    if (sequenceFinished && !finished && calculate) {
+      setCalculate(false);
+      // Calculate score changes only after the sequence is finished
+      const scoreChanges = playerAnswers.map((answer, index) => {
+        if (answer === correctAnswer) {
+          return parseInt(difficulty); // Add points based on difficulty
+        } else if (answer !== -1) {
+          return -parseInt(difficulty); // Subtract points if wrong
+        }
+        return 0;
+      });
+
+      // Update scores asynchronously after all calculations are done
+      setTimeout(() => {
+        setScores((prevScores) =>
+          prevScores.map((score, index) => score + scoreChanges[index])
+        );
+      }, 0);
+    }
+  }, [
+    sequenceFinished,
+    finished,
+    playerAnswers,
+    correctAnswer,
+    difficulty,
+    setScores,
+    calculate,
+    setCalculate,
+  ]);
+
   const handleCorrect = () => {
     setIsBlinking(true);
+
     setTimeout(() => {
       setIsBlinking(false);
       setFinished(true);
