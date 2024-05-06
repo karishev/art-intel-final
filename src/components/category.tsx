@@ -5,9 +5,15 @@ interface Props {
   categoryList: string[];
   backgroundColor: string;
   title: string;
+  questions: string[];
 }
 
-export const Category = ({ categoryList, backgroundColor, title }: Props) => {
+export const Category = ({
+  categoryList,
+  backgroundColor,
+  title,
+  questions,
+}: Props) => {
   return (
     <div className={styles.category}>
       <div
@@ -17,12 +23,13 @@ export const Category = ({ categoryList, backgroundColor, title }: Props) => {
         {title}
       </div>
       <ul className={styles.category__list}>
-        {categoryList.map((value) => (
+        {categoryList.map((value, index) => (
           <Card
             key={value}
             category={title}
             title={value}
             backgroundColor={backgroundColor}
+            question={questions[index]}
           />
         ))}
       </ul>

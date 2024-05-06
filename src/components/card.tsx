@@ -8,9 +8,10 @@ interface Props {
   title: string;
   backgroundColor: string;
   category: string;
+  question: string;
 }
 
-export const Card = ({ title, backgroundColor, category }: Props) => {
+export const Card = ({ title, backgroundColor, category, question }: Props) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -49,7 +50,7 @@ export const Card = ({ title, backgroundColor, category }: Props) => {
             background={backgroundColor}
             onClick={handleClose}
             category={category}
-            question={""}
+            question={question}
             difficulty={title}
           />
         </Box>

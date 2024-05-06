@@ -145,8 +145,6 @@
   aspect-ratio: 1 / 1;
 }
 
-
-
 .question__content__top__text {
   display: flex;
   align-items: flex-end;
@@ -227,4 +225,19 @@
   height: 0.5rem;
   background-color: white;
   transition: width 1s linear;
+}
+
+.blink {
+  animation: blink-animation 1.5s step-start 0s infinite;
+  background-color: green;
+}
+
+@keyframes blink-animation {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: green;
+  }
 }
