@@ -2,9 +2,10 @@ import styles from "./components/style.module.css";
 import { Category } from "./components/category";
 import { Players } from "./components/players";
 
-import { PlayerScoreProvider } from "./context/score-context";
-import { useState } from "react";
+import { useScores } from "./context/score-context";
+import { useEffect, useState } from "react";
 import { InstructionsOverlay } from "./components/instructions";
+import { WinningOverlay } from "./components/winning";
 
 function App() {
   const categoryList = [
@@ -24,7 +25,7 @@ function App() {
       title: "celebrity",
       backgroundColor: "rgb(241,159,109)",
       titles: ["100", "200", "300", "400", "500"],
-      questions: ["musk", "mark", "mrbeast", "tate", "jeorogan"],
+      questions: ["musk", "mark", "mrbeast", "tate", "joerogan"],
     },
     {
       title: "cartoon",
@@ -48,8 +49,32 @@ function App() {
     setShowInstructions(false);
   };
 
+  const [gameFinished, setGameFinished] = useState(false);
+  const { scores } = useScores();
+
+  const [allCardsDisabled, setAllCardsDisabled] = useState<boolean[]>(
+    categoryList.map(() => false)
+  );
+
+  const checkWinCondition = () => {
+    // Logic to determine if all cards are disabled
+    if (allCardsDisabled.every((card) => card)) {
+      setGameFinished(true);
+    }
+  };
+
+  useEffect(() => {
+    checkWinCondition();
+  }, [allCardsDisabled]);
+
+  const getWinner = () => {
+    const maxScore = Math.max(...scores);
+    const winnerIndex = scores.indexOf(maxScore);
+    return `Player ${winnerIndex + 1}`;
+  };
+
   return (
-    <PlayerScoreProvider>
+    <>
       {(!gameStarted || showInstructions) && (
         <InstructionsOverlay
           onStart={startGame}
@@ -67,8 +92,15 @@ function App() {
         <section className={styles.section}>
           <h1 className={styles.title}>Jeopardy</h1>
           <div className={styles.game__container}>
-            {categoryList.map((category) => (
+            {categoryList.map((category, index) => (
               <Category
+                onAllCardsDisabled={() =>
+                  setAllCardsDisabled((prev) => {
+                    const newDisabled = [...prev];
+                    newDisabled[index] = true;
+                    return newDisabled;
+                  })
+                }
                 key={category.title}
                 title={category.title}
                 categoryList={category.titles}
@@ -80,7 +112,14 @@ function App() {
         </section>
         <Players />
       </>
-    </PlayerScoreProvider>
+      {gameFinished && (
+        <WinningOverlay
+          winner={getWinner()}
+          score={Math.max(...scores)}
+          onRestart={() => window.location.reload()}
+        />
+      )}
+    </>
   );
 }
 

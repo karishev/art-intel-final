@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "./card";
 import styles from "./style.module.css";
 
@@ -7,6 +7,7 @@ interface Props {
   backgroundColor: string;
   title: string;
   questions: string[];
+  onAllCardsDisabled: () => void;
 }
 
 export const Category = ({
@@ -14,10 +15,18 @@ export const Category = ({
   backgroundColor,
   title,
   questions,
+  onAllCardsDisabled,
 }: Props) => {
   const [disabledList, setDisabledList] = useState<boolean[]>(
     categoryList.map(() => false)
   );
+
+  useEffect(() => {
+    if (disabledList.every((card) => card)) {
+      onAllCardsDisabled();
+    }
+  }, [disabledList, onAllCardsDisabled]);
+  
   return (
     <div className={styles.category}>
       <div
