@@ -3,6 +3,8 @@ import { Category } from "./components/category";
 import { Players } from "./components/players";
 
 import { PlayerScoreProvider } from "./context/score-context";
+import { useState } from "react";
+import { InstructionsOverlay } from "./components/instructions";
 
 function App() {
   const categoryList = [
@@ -38,8 +40,29 @@ function App() {
     },
   ];
 
+  const [gameStarted, setGameStarted] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
+
+  const startGame = () => {
+    setGameStarted(true);
+    setShowInstructions(false);
+  };
+
   return (
     <PlayerScoreProvider>
+      {(!gameStarted || showInstructions) && (
+        <InstructionsOverlay
+          onStart={startGame}
+          showInstructions={showInstructions}
+        />
+      )}
+
+      <div className={styles.instructions__toggle}>
+        <button onClick={() => setShowInstructions(!showInstructions)}>
+          Instructions ?
+        </button>
+      </div>
+
       <>
         <section className={styles.section}>
           <h1 className={styles.title}>Jeopardy</h1>

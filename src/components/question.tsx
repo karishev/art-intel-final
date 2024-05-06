@@ -85,7 +85,7 @@ export const Question = ({
         )
       );
 
-      for (let i = 3; i < shuffledRecordings.length; i++) {
+      for (let i = 0; i < shuffledRecordings.length; i++) {
         const audio = new Audio(shuffledRecordings[i]);
         setCurrentRecording(i + 1);
         await new Promise((resolve) => {
