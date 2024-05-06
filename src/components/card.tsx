@@ -9,13 +9,27 @@ interface Props {
   backgroundColor: string;
   category: string;
   question: string;
+  disabled: boolean;
+  setDisabled: (value: boolean) => void;
 }
 
-export const Card = ({ title, backgroundColor, category, question }: Props) => {
+export const Card = ({
+  title,
+  backgroundColor,
+  category,
+  question,
+  disabled,
+  setDisabled,
+}: Props) => {
   const [open, setOpen] = useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+    setDisabled(true);
+  };
 
   const style = {
     position: "absolute",
@@ -34,9 +48,11 @@ export const Card = ({ title, backgroundColor, category, question }: Props) => {
   return (
     <>
       <li
-        className={styles.category__item}
+        className={`${styles.category__item} ${
+          disabled ? styles.disabled : ""
+        }`}
         style={{ backgroundColor: backgroundColor }}
-        onClick={handleOpen}
+        onClick={!disabled ? handleOpen : undefined}
       >
         <p>{title}</p>
       </li>

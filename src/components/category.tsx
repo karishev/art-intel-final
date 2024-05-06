@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card } from "./card";
 import styles from "./style.module.css";
 
@@ -14,6 +15,9 @@ export const Category = ({
   title,
   questions,
 }: Props) => {
+  const [disabledList, setDisabledList] = useState<boolean[]>(
+    categoryList.map(() => false)
+  );
   return (
     <div className={styles.category}>
       <div
@@ -25,6 +29,12 @@ export const Category = ({
       <ul className={styles.category__list}>
         {categoryList.map((value, index) => (
           <Card
+            disabled={disabledList[index]}
+            setDisabled={(value) => {
+              const newList = [...disabledList];
+              newList[index] = value;
+              setDisabledList(newList);
+            }}
             key={value}
             category={title}
             title={value}

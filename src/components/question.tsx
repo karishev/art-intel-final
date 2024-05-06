@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./style.module.css";
 import { Players } from "./players";
 import { useScores } from "../context/score-context";
@@ -48,18 +48,28 @@ export const Question = ({
 
   const { scores, setScores } = useScores();
   const [playerAnswers, setPlayerAnswers] = useState([-1, -1]); // Last key pressed by each player
+  const playerAnswersRef = useRef(playerAnswers);
+  playerAnswersRef.current = playerAnswers;
 
-  const handleKeyPress = (event: KeyboardEvent) => {
-    const keyMap = { a: 0, s: 1, d: 2, f: 3, h: 0, j: 1, k: 2, l: 3 };
-    if (event.key in keyMap) {
-      const playerIndex = ["a", "s", "d", "f"].includes(event.key) ? 0 : 1;
-      setPlayerAnswers((prev) => {
-        const newAnswers = [...prev];
-        newAnswers[playerIndex] = keyMap[event.key as keyof typeof keyMap];
-        return newAnswers;
-      });
-    }
-  };
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      const keyMap = { a: 0, s: 1, d: 2, f: 3, h: 0, j: 1, k: 2, l: 3 };
+      if (event.key in keyMap) {
+        const playerIndex = ["a", "s", "d", "f"].includes(event.key) ? 0 : 1;
+
+        if (playerAnswersRef.current[playerIndex] !== -1) {
+          return;
+        }
+        setPlayerAnswers((prev) => {
+          const newAnswers = [...prev];
+          newAnswers[playerIndex] = keyMap[event.key as keyof typeof keyMap];
+          return newAnswers;
+        });
+      }
+    },
+    // Include playerAnswers and correctAnswer in the dependency array
+    [playerAnswers, correctAnswer]
+  );
 
   useEffect(() => {
     console.log("HERE5:", playerAnswers, correctAnswer);
@@ -75,14 +85,14 @@ export const Question = ({
         )
       );
 
-      for (let i = 0; i < shuffledRecordings.length; i++) {
+      for (let i = 3; i < shuffledRecordings.length; i++) {
         const audio = new Audio(shuffledRecordings[i]);
         setCurrentRecording(i + 1);
         await new Promise((resolve) => {
           audio.onended = resolve;
           audio.play();
         });
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Pause between recordings
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // Pause between recordings
       }
       setCurrentRecording(0);
       setSequenceFinished(true);
@@ -98,11 +108,25 @@ export const Question = ({
 
   useEffect(() => {
     let interval: string | number | NodeJS.Timeout | undefined;
+
+    const checkAnswersComplete = () => {
+      // Check if both players have answered
+      return playerAnswers.every((answer) => answer !== -1);
+    };
+
     if (sequenceFinished) {
       interval = setInterval(() => {
+        if (checkAnswersComplete()) {
+          clearInterval(interval);
+          handleCorrect();
+          setCalculate(true);
+          setTimerWidth(0);
+          return;
+        }
+
         setTimer((prevTimer) => {
           if (prevTimer > 0) {
-            const newWidth = ((prevTimer - 1) / 30) * 100;
+            const newWidth = ((prevTimer - 1) / 10) * 100;
             setTimerWidth(newWidth);
             return prevTimer - 1;
           }
@@ -116,7 +140,7 @@ export const Question = ({
     }
 
     return () => clearInterval(interval);
-  }, [sequenceFinished]);
+  }, [sequenceFinished, playerAnswers]);
 
   useEffect(() => {
     if (sequenceFinished && !finished && calculate) {
