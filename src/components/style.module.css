@@ -128,6 +128,7 @@
   font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
+  position: relative;
 }
 
 .active {
@@ -289,4 +290,34 @@
 
 .timerBar__text p {
   color: black;
+}
+
+.player1 {
+  position: absolute;
+  top: -2.5rem;
+  left: 1rem;
+  color: rgb(255, 204, 48);
+  font-size: 2rem;
+  transform: rotate(180deg);
+  animation: bounce 1s infinite;
+}
+
+.player2 {
+  position: absolute;
+  top: -2.5rem;
+  right: 1rem;
+  color: rgb(48, 204, 255);
+  font-size: 2rem;
+  transform: rotate(180deg);
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    top: -2.5rem;
+  }
+  50% {
+    top: -2.25rem;
+  }
 }

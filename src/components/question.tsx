@@ -233,6 +233,12 @@ export const Question = ({
                       : ""
                   }`}
                 >
+                  {finished && playerAnswers[0] === recordingNumber - 1 && (
+                    <div className={styles.player1}>↑</div>
+                  )}
+                  {finished && playerAnswers[1] === recordingNumber - 1 && (
+                    <div className={styles.player2}>↑</div>
+                  )}
                   Recording {recordingNumber}
                 </li>
               ))}
