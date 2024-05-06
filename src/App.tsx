@@ -90,7 +90,7 @@ function App() {
 
       <>
         <section className={styles.section}>
-          <h1 className={styles.title}>Jeopardy</h1>
+          <h1 className={styles.title}>Jeopardy! Can You Spot the Fake?</h1>
           <div className={styles.game__container}>
             {categoryList.map((category, index) => (
               <Category
