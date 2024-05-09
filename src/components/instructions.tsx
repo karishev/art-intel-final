@@ -46,6 +46,9 @@ export const InstructionsOverlay: React.FC<Props> = ({
           {" "}
           {showInstructions ? "Continue" : "Start Game"}
         </button>
+        {showInstructions && (
+          <button onClick={() => window.location.reload()}>Restart</button>
+        )}
       </div>
     </div>
   );
